@@ -9,8 +9,7 @@ import WebApp from '@twa-dev/sdk';
 
 function App() {
   const {
-    owner_address,
-    // contract_address,
+    // owner_address,
     counter_value,
     contract_balance,
     betOnHeads,
@@ -20,7 +19,7 @@ function App() {
   } = useMainContract();
 
   const { connected, accountAddress } = useTonConnect();
-  const isOwner = accountAddress === 'UQDtTs-hkx9THnUWYMKMmdCOudSS0t7LzhhOR7tzdZxPoI8h'; //TEMP FIX
+  const isOwner = accountAddress === 'UQDtTs-hkx9THnUWYMKMmdCOudSS0t7LzhhOR7tzdZxPoI8h'; // TEMP FIX
 
   const [betAmount, setBetAmount] = useState("0.05");
 
@@ -40,32 +39,27 @@ function App() {
 
       <main className="content">
         <div className="card">
-          <h3>Owner Address</h3>
-          <p className='hint'>{owner_address?.toString()}</p>
-          <h3>Your Address</h3>
-          <p className='hint'>{accountAddress?.toString()}</p>
+          <h3>Total Games Played</h3>
+          <p>{counter_value ?? "Loading..."}</p>
           <h3>Our Contract Balance</h3>
           <p className='hint'>{contract_balance && fromNano(contract_balance)}</p>
         </div>
 
-        <div className="card">
-          <h3>Total Games Played</h3>
-          <p>{counter_value ?? "Loading..."}</p>
-        </div>
-
-       <div className="bet-section">
-        <label htmlFor="betAmount">Bet Amount (in TON): </label>
-        <input
-          id="betAmount"
-          type="number"
-          value={betAmount}
-          onChange={(e) => setBetAmount(e.target.value)}
-          onFocus={(e) => e.target.select()}  // This will select the entire input content when focused
-          min="0.001"
-          max="1.0"
-          step="any" // Ensures there's no default step value
-        />
-      </div>
+        {connected && (
+          <div className="bet-section">
+            <label htmlFor="betAmount">Bet Amount (in TON): </label>
+            <input
+              id="betAmount"
+              type="number"
+              value={betAmount}
+              onChange={(e) => setBetAmount(e.target.value)}
+              onFocus={(e) => e.target.select()}  // Selects input content when focused
+              min="0.001"
+              max="1.0"
+              step="any" // Allows for decimal values
+            />
+          </div>
+        )}
 
         {connected && isOwner && (
           <div className="actions">
@@ -78,7 +72,7 @@ function App() {
           </div>
         )}
 
-        {connected && !isOwner &&(
+        {connected && !isOwner && (
           <div className="actions">
             <button className="action-button" onClick={() => betOnHeads(betAmount)}>
               Bet on Heads
