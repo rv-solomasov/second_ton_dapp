@@ -39,19 +39,21 @@ function App() {
 
       <main className="content">
         <div className="card">
-          <h3>Total Games Played</h3>
-          <p>{counter_value ?? "Loading..."}</p>
-          <h3>Our Contract Balance</h3>
-          <p className='hint'>{contract_balance && fromNano(contract_balance)}</p>
+          <div className="info-item">
+             <p><strong>Games Played:</strong> {counter_value ?? "Loading..."}</p>
+          </div>
+          <div className="info-item">
+            <p><strong>Our Balance:</strong> {contract_balance ? fromNano(contract_balance) : "Loading..."}</p>
+          </div>
         </div>
 
         {connected && (
-          <div className="bet-section">
-            <label htmlFor="betAmount">Bet Amount (in TON): </label>
-            <input
-              id="betAmount"
-              type="number"
-              value={betAmount}
+            <div className="bet-section">
+              <label htmlFor="betAmount" className="bet-label">Bet TON Amount: </label>
+              <input
+                  id="betAmount"
+                  type="number"
+                  value={betAmount}
               onChange={(e) => setBetAmount(e.target.value)}
               onFocus={(e) => e.target.select()}  // Selects input content when focused
               min="0.001"
