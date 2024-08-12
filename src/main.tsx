@@ -4,7 +4,7 @@ import './index.css';
 import { TonConnectUIProvider } from '@tonconnect/ui-react';
 
 // temp manifest by the course provider
-const manifestUrl = 'https://rv-solomasov.github.io/first_ton_dapp/tonconnect-manifest.json';
+const manifestUrl = 'https://rv-solomasov.github.io/second_ton_dapp/tonconnect-manifest.json';
 
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
