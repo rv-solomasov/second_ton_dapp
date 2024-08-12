@@ -4,6 +4,6 @@ import { nodePolyfills } from "vite-plugin-node-polyfills";
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react(), nodePolyfills()],
-  base: "/first_ton_dapp/",
+    plugins: [react(), nodePolyfills()],
+    base: "/second_ton_dapp/",
 });

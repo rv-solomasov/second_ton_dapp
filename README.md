@@ -1,1 +1,1 @@
-# first_ton_dapp
+# second_ton_dapp
