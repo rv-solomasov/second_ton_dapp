@@ -57,13 +57,13 @@ function App() {
               value={betAmount}
               onChange={(e) => {
                 const value = e.target.value;
-                
-                // Allow the value to be an empty string
-                if (value === "" || /^\d*\.?\d*$/.test(value)) {
+
+                // Allow empty string or zero as a valid input
+                if (value === "" || value === "0" || /^\d*\.?\d*$/.test(value)) {
                   const numericValue = parseFloat(value);
 
-                  // Check if value is not a number (empty string) or within the desired range
-                  if (value === "" || (!isNaN(numericValue) && numericValue >= 0.001 && numericValue <= 1.0)) {
+                  // Check if the value is empty, zero, or a valid number within the range
+                  if (value === "" || value === "0" || (!isNaN(numericValue) && numericValue >= 0.001 && numericValue <= 1.0)) {
                     setBetAmount(value);
                   }
                 }
