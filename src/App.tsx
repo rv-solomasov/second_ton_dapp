@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { TonConnectButton } from '@tonconnect/ui-react';
 import './App.css';
 import DarkModeToggle from './DarkModeToggle';
@@ -11,6 +11,7 @@ function App() {
   const {
     counter_value,
     contract_balance,
+    isWinner, // Destructure isWinner from useMainContract
     betOnHeads,
     betOnTails,
     sendDeposit,
@@ -21,6 +22,7 @@ function App() {
   const isOwner = accountAddress === 'UQDtTs-hkx9THnUWYMKMmdCOudSS0t7LzhhOR7tzdZxPoI8h'; // TEMP FIX
 
   const [betAmount, setBetAmount] = useState("0.05");
+  const [gameState, setGameState] = useState("waiting for bet"); // Track the current game state
 
   const showAlert = () => {
     WebApp.showAlert("Hey there!");
@@ -28,6 +30,18 @@ function App() {
 
   // Check if the bet amount is valid
   const isBetAmountValid = parseFloat(betAmount) >= 0.001 && parseFloat(betAmount) <= 1;
+
+  // Update gameState based on isWinner
+  useEffect(() => {
+    if (isWinner === true) {
+      setGameState("you won");
+    } else if (isWinner === false) {
+      setGameState("you lost");
+    } else if (isWinner === undefined) {
+      // Keep "game in progress" if a bet has been placed, otherwise reset to "waiting for bet"
+      setGameState(prevState => (prevState === "game in progress" ? prevState : "waiting for bet"));
+    }
+  }, [isWinner]);
 
   return (
     <div className="app-container">
@@ -47,6 +61,10 @@ function App() {
           <div className="info-item">
             <p><strong>Our Balance:</strong> {contract_balance ? fromNano(contract_balance) : "Loading..."}</p>
           </div>
+        </div>
+
+        <div className="game-state">
+          <p>{gameState}</p>
         </div>
 
         {connected && (
@@ -101,14 +119,20 @@ function App() {
           <div className="actions">
             <button
               className="action-button"
-              onClick={() => betOnHeads(betAmount)}
+              onClick={() => {
+                betOnHeads(betAmount);
+                setGameState("game in progress"); // Set game state to "game in progress" after bet
+              }}
               disabled={!isBetAmountValid} // Disable if bet amount is not valid
             >
               Bet on Heads
             </button>
             <button
               className="action-button"
-              onClick={() => betOnTails(betAmount)}
+              onClick={() => {
+                betOnTails(betAmount);
+                setGameState("game in progress"); // Set game state to "game in progress" after bet
+              }}
               disabled={!isBetAmountValid} // Disable if bet amount is not valid
             >
               Bet on Tails
