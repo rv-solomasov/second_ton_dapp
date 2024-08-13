@@ -29,7 +29,7 @@ function App() {
   };
 
   // Check if the bet amount is valid
-  const isBetAmountValid = parseFloat(betAmount) >= 0.001 && parseFloat(betAmount) <= 1;
+  const isBetAmountValid = parseFloat(betAmount) >= 0.001 && parseFloat(betAmount) <= 10.0;
 
   // Update gameState based on isWinner
   useEffect(() => {
@@ -68,46 +68,72 @@ function App() {
         </div>
 
         {connected && (
-          <div className="bet-section">
-            <label htmlFor="betAmount" className="bet-label">Bet TON Amount: </label>
-            <input
-              id="betAmount"
-              type="number"
-              inputMode="decimal"
-              value={betAmount}
-              onChange={(e) => {
-                const value = e.target.value;
+            <div className="bet-section">
+              <div className="bet-amount-buttons">
+                {[0.5, 1, 2].map(amount => (
+                    <button
+                        key={amount}
+                        type="button"
+                        className="bet-amount-button"
+                        onClick={() => setBetAmount(amount.toString())}
+                    >
+                      {amount} TON
+                    </button>
+                ))}
+              </div>
+              <div className="bet-amount-buttons">
+                {[5, 7, 10].map(amount => (
+                    <button
+                        key={amount}
+                        type="button"
+                        className="bet-amount-button"
+                        onClick={() => setBetAmount(amount.toString())}
+                    >
+                      {amount} TON
+                    </button>
+                ))}
+              </div>
 
-                // Allow empty string or values that match the pattern for numbers and decimals
-                if (value === "" || /^\d*\.?\d*$/.test(value)) {
-                  // Allow any numeric value, even 0 or 0.x as intermediate states
-                  if (value === "" || value === "0" || value === "0." || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0 && parseFloat(value) <= 1.0)) {
-                    setBetAmount(value);
-                  }
-                }
-              }}
-              onFocus={(e) => e.target.select()}
-              min="0.001"
-              max="1.0"
-              step="any"
-              className={`bet-input ${!isBetAmountValid ? "invalid" : ""}`} // Conditionally add "invalid" class
-            />
-            {!isBetAmountValid && <p className="error-message">Please enter a valid amount between 0.001 and 1 TON.</p>}
-          </div>
+              <label htmlFor="betAmount" className="bet-label">Bet TON Amount: </label>
+              <input
+                  id="betAmount"
+                  type="number"
+                  inputMode="decimal"
+                  value={betAmount}
+                  onChange={(e) => {
+                    const value = e.target.value;
+
+                    // Allow empty string or values that match the pattern for numbers and decimals
+                    if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                      // Allow any numeric value, even 0 or 0.x as intermediate states
+                      if (value === "" || value === "0" || value === "0." || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0 && parseFloat(value) <= 10.0)) {
+                        setBetAmount(value);
+                      }
+                    }
+                  }}
+                  onFocus={(e) => e.target.select()}
+                  min="0.001"
+                  max="10.0"
+                  step="any"
+                  className={`bet-input ${!isBetAmountValid ? "invalid" : ""}`} // Conditionally add "invalid" class
+              />
+              {!isBetAmountValid &&
+                  <p className="error-message">Please enter a valid amount between 0.001 and 10 TON.</p>}
+            </div>
         )}
 
         {connected && isOwner && (
-          <div className="actions">
-            <button
-              className="action-button"
-              onClick={() => sendDeposit(betAmount)}
-              disabled={!isBetAmountValid} // Disable if bet amount is not valid
-            >
-              (Admin) Deposit
-            </button>
-            <button
-              className="action-button"
-              onClick={() => sendWithdrawalRequest(betAmount)}
+            <div className="actions">
+              <button
+                  className="action-button"
+                  onClick={() => sendDeposit(betAmount)}
+                  disabled={!isBetAmountValid} // Disable if bet amount is not valid
+              >
+                (Admin) Deposit
+              </button>
+              <button
+                  className="action-button"
+                  onClick={() => sendWithdrawalRequest(betAmount)}
               disabled={!isBetAmountValid} // Disable if bet amount is not valid
             >
               (Admin) Withdraw

@@ -80,11 +80,46 @@ body {
 
 .hint {
   font-size: 1rem;
-  color:var(--tg-theme-text-color, #555);
+  color: var(--tg-theme-text-color, #555);
 }
 
+.game-state {
+  text-align: center;
+  margin-top: 18px;
+  margin-bottom: 25px;
+}
+
+.game-state p {
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  padding: 10px;
+  border: 1px solid #007BFF;
+  border-radius: 50px;
+  display: inline-block;
+  background-color: #007BFF; /* Dark background */
+  animation: pulse 1.5s infinite;
+}
+
+/* Pulsing effect */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+
 .bet-section {
-  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 18px;
 }
 
 .bet-label {
@@ -132,6 +167,48 @@ body {
   -moz-appearance: textfield;
   -webkit-appearance: none;
   appearance: none;
+}
+
+.bet-amount-buttons {
+  display: flex;
+  gap: 5px; /* Space between buttons */
+  margin-bottom: 15px; /* Space below buttons */
+}
+
+.bet-amount-button {
+  width: 105px;
+  height: 40px;
+  padding: 0.5rem;
+  font-size: 0.9rem;
+  border: none;
+  border-radius: 50px;
+  background-color: #007bff;
+  color: white;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  font-weight: bold;
+  justify-content: center;
+  margin-top: -7px;
+}
+
+.bet-amount-button:hover,
+.bet-amount-button:focus {
+  background-color: var(--tg-button-hover-color, #0069d9);
+  transform: translateY(-2px);
+}
+
+.bet-input {
+  width: 100px;
+  padding: 0.5rem;
+  font-size: 1rem;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+  outline: none;
+  transition: border-color 0.3s ease;
+}
+
+.bet-amount-button:active {
+  transform: translateY(0);
 }
 
 .actions {
@@ -186,6 +263,19 @@ body.dark-mode .bet-section input {
 
 body.dark-mode .info-item p {
   color: white;
+}
+
+body.dark-mode .bet-amount-button {
+  background-color: #bb86fc;
+}
+
+body.dark-mode .bet-amount-button:hover {
+  background-color: #985eff;
+}
+
+body.dark-mode .game-state p {
+  border: 1px solid #985eff;
+  background-color: #985eff;
 }
 
 body.dark-mode .info-item strong {
