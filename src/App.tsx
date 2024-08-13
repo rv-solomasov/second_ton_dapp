@@ -9,7 +9,6 @@ import WebApp from '@twa-dev/sdk';
 
 function App() {
   const {
-    // owner_address,
     counter_value,
     contract_balance,
     betOnHeads,
@@ -26,6 +25,9 @@ function App() {
   const showAlert = () => {
     WebApp.showAlert("Hey there!");
   };
+
+  // Check if the bet amount is valid
+  const isBetAmountValid = parseFloat(betAmount) >= 0.001 && parseFloat(betAmount) <= 1;
 
   return (
     <div className="app-container">
@@ -48,9 +50,9 @@ function App() {
         </div>
 
         {connected && (
-            <div className="bet-section">
-              <label htmlFor="betAmount" className="bet-label">Bet TON Amount: </label>
-             <input
+          <div className="bet-section">
+            <label htmlFor="betAmount" className="bet-label">Bet TON Amount: </label>
+            <input
               id="betAmount"
               type="number"
               inputMode="decimal"
@@ -70,16 +72,27 @@ function App() {
               min="0.001"
               max="1.0"
               step="any"
+              style={{
+                borderColor: isBetAmountValid ? "initial" : "red", // Change border color based on validity
+              }}
             />
           </div>
         )}
 
         {connected && isOwner && (
           <div className="actions">
-            <button className="action-button" onClick={() => sendDeposit(betAmount)}>
+            <button
+              className="action-button"
+              onClick={() => sendDeposit(betAmount)}
+              disabled={!isBetAmountValid} // Disable if bet amount is not valid
+            >
               (Admin) Deposit
             </button>
-            <button className="action-button" onClick={() => sendWithdrawalRequest(betAmount)}>
+            <button
+              className="action-button"
+              onClick={() => sendWithdrawalRequest(betAmount)}
+              disabled={!isBetAmountValid} // Disable if bet amount is not valid
+            >
               (Admin) Withdraw
             </button>
           </div>
@@ -87,10 +100,18 @@ function App() {
 
         {connected && !isOwner && (
           <div className="actions">
-            <button className="action-button" onClick={() => betOnHeads(betAmount)}>
+            <button
+              className="action-button"
+              onClick={() => betOnHeads(betAmount)}
+              disabled={!isBetAmountValid} // Disable if bet amount is not valid
+            >
               Bet on Heads
             </button>
-            <button className="action-button" onClick={() => betOnTails(betAmount)}>
+            <button
+              className="action-button"
+              onClick={() => betOnTails(betAmount)}
+              disabled={!isBetAmountValid} // Disable if bet amount is not valid
+            >
               Bet on Tails
             </button>
           </div>
