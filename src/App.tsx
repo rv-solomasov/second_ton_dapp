@@ -72,10 +72,9 @@ function App() {
               min="0.001"
               max="1.0"
               step="any"
-              style={{
-                borderColor: isBetAmountValid ? "initial" : "red", // Change border color based on validity
-              }}
+              className={`bet-input ${!isBetAmountValid ? "invalid" : ""}`} // Conditionally add "invalid" class
             />
+            {!isBetAmountValid && <p className="error-message">Please enter a valid amount between 0.001 and 1 TON.</p>}
           </div>
         )}
 
