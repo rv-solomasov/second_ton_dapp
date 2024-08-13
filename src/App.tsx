@@ -50,7 +50,7 @@ function App() {
         {connected && (
             <div className="bet-section">
               <label htmlFor="betAmount" className="bet-label">Bet TON Amount: </label>
-              <input
+             <input
               id="betAmount"
               type="number"
               inputMode="decimal"
@@ -58,12 +58,10 @@ function App() {
               onChange={(e) => {
                 const value = e.target.value;
 
-                // Allow empty string or zero as a valid input
-                if (value === "" || value === "0" || /^\d*\.?\d*$/.test(value)) {
-                  const numericValue = parseFloat(value);
-
-                  // Check if the value is empty, zero, or a valid number within the range
-                  if (value === "" || value === "0" || (!isNaN(numericValue) && numericValue >= 0.001 && numericValue <= 1.0)) {
+                // Allow empty string or values that match the pattern for numbers and decimals
+                if (value === "" || /^\d*\.?\d*$/.test(value)) {
+                  // Allow any numeric value, even 0 or 0.x as intermediate states
+                  if (value === "" || value === "0" || value === "0." || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0 && parseFloat(value) <= 1.0)) {
                     setBetAmount(value);
                   }
                 }
