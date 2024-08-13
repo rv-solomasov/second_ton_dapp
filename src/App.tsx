@@ -51,15 +51,24 @@ function App() {
             <div className="bet-section">
               <label htmlFor="betAmount" className="bet-label">Bet TON Amount: </label>
               <input
-                  id="betAmount"
-                  type="number"
-                  value={betAmount}
-              onChange={(e) => setBetAmount(e.target.value)}
-              onFocus={(e) => e.target.select()}  // Selects input content when focused
-              min="0.001"
-              max="1.0"
-              step="any" // Allows for decimal values
-            />
+                id="betAmount"
+                type="number"
+                inputMode="decimal"
+                value={betAmount}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  if (/^\d*\.?\d*$/.test(value)) {
+                    const numericValue = parseFloat(value);
+                    if (!isNaN(numericValue) && numericValue >= 0.001 && numericValue <= 1.0) {
+                      setBetAmount(value);
+                    }
+                  }
+                }}
+                onFocus={(e) => e.target.select()}
+                min="0.001"
+                max="1.0"
+                step="any"
+              />
           </div>
         )}
 
