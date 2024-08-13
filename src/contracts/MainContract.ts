@@ -12,6 +12,7 @@ import {
 export type MainContractConfig = {
     number: number;
     last_result: number;
+    last_sender: Address;
     owner_address: Address;
 };
 
@@ -19,6 +20,7 @@ export function mainContractConfigToCell(config: MainContractConfig): Cell {
     return beginCell()
         .storeUint(config.number, 32)
         .storeUint(config.last_result, 1)
+        .storeAddress(config.last_sender)
         .storeAddress(config.owner_address)
         .endCell();
 }
@@ -118,6 +120,7 @@ export class MainContract implements Contract {
         return {
             number: stack.readNumber(),
             last_result: stack.readNumber(),
+            last_sender: stack.readAddress(),
             owner_address: stack.readAddress(),
         };
     }
