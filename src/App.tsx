@@ -29,7 +29,7 @@ function App() {
   };
 
   // Check if the bet amount is valid
-  const isBetAmountValid = parseFloat(betAmount) >= 0.001 && parseFloat(betAmount) <= 10.0;
+  const isBetAmountValid = parseFloat(betAmount) >= 0.01 && parseFloat(betAmount) <= 10.0;
 
   // Update gameState based on isWinner
   useEffect(() => {
@@ -118,7 +118,7 @@ function App() {
                   className={`bet-input ${!isBetAmountValid ? "invalid" : ""}`} // Conditionally add "invalid" class
               />
               {!isBetAmountValid &&
-                  <p className="error-message">Please enter a valid amount between 0.001 and 10 TON.</p>}
+                  <p className="error-message">Please enter a valid amount between 0.01 and 10 TON.</p>}
             </div>
         )}
 
