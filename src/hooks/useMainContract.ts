@@ -7,7 +7,7 @@ import { useTonConnect } from "./useTonConnect";
 
 export function useMainContract() {
     const client = useTonClient();
-    const { sender } = useTonConnect();
+    const { sender, accountAddress } = useTonConnect();
 
     const sleep = (time: number) =>
         new Promise((resolve) => setTimeout(resolve, time));
@@ -21,6 +21,7 @@ export function useMainContract() {
 
     const [balance, setBalance] = useState<null | number>(null);
     const [isWinner, setIsWinner] = useState<undefined | boolean>(undefined);
+    const [isOwner, setIsOwner] = useState<boolean>(false);
     const [prevGameCount, setPrevGameCount] = useState<null | number>(null);
 
     const mainContract = useAsyncInitialize(async () => {
@@ -38,7 +39,6 @@ export function useMainContract() {
             const val = await mainContract.getData();
             const { balance } = await mainContract.getBalance();
 
-            // Update contract data without resetting
             setContractData({
                 counter_value: val.number,
                 last_result: val.last_result,
@@ -46,40 +46,51 @@ export function useMainContract() {
                 owner_address: val.owner_address,
             });
 
-            // Only update balance if fetched successfully
             if (balance !== undefined) {
                 setBalance(balance);
             }
 
-            // Check if a new game has been played
+            // Check if sender is the owner
+            if (accountAddress) {
+                const addressObject = Address.parse(accountAddress);
+                const ownerAddressObject = val.owner_address;
+                setIsOwner(
+                    addressObject.toString() === ownerAddressObject.toString()
+                );
+            } else {
+                setIsOwner(false);
+            }
+
             if (prevGameCount !== null && val.number > prevGameCount) {
-                // Determine if the current user is the winner
-                if (val.last_sender.toString() === sender?.toString()) {
-                    setIsWinner(val.last_result === 1);
-                } else {
-                    setIsWinner(undefined); // Reset isWinner if the sender is not the current user
+                if (accountAddress) {
+                    const addressObject = Address.parse(accountAddress);
+                    if (
+                        val.last_sender.toString() === addressObject.toString()
+                    ) {
+                        setIsWinner(val.last_result === 1);
+                    } else {
+                        setIsWinner(undefined);
+                    }
                 }
             } else {
-                // Reset isWinner to undefined if nothing has changed
                 setIsWinner(undefined);
             }
 
-            // Update previous game count
             setPrevGameCount(val.number);
 
-            // Recursively fetch values with a delay
-            await sleep(500); // sleep 0.5 seconds before running again
+            await sleep(500);
             getValue();
         }
 
         getValue();
-    }, [mainContract, sender, prevGameCount]);
+    }, [mainContract, sender, accountAddress, prevGameCount]); // Ensure to include accountAddress in the dependency array
 
     return {
         owner_address: contractData?.owner_address.toString(),
         contract_address: mainContract?.address.toString(),
         contract_balance: balance,
         isWinner,
+        isOwner, // Added isOwner to the returned object
         ...contractData,
         betOnHeads: async (amount: string) => {
             return mainContract?.sendGame(sender, toNano(amount), 0);
@@ -94,7 +105,7 @@ export function useMainContract() {
             return mainContract?.sendWithdrawalRequest(
                 sender,
                 toNano("0.05"),
-                toNano(toNano(amount))
+                toNano(amount) // Correctly use amount
             );
         },
     };

@@ -6,42 +6,48 @@ import { useMainContract } from './hooks/useMainContract';
 import { useTonConnect } from './hooks/useTonConnect';
 import { fromNano } from '@ton/core';
 import WebApp from '@twa-dev/sdk';
+import Modal from './components/Modal'; // Import the Modal component
 
 function App() {
   const {
     counter_value,
     contract_balance,
-    isWinner, // Destructure isWinner from useMainContract
+    isWinner,
+    isOwner,
     betOnHeads,
     betOnTails,
     sendDeposit,
     sendWithdrawalRequest
   } = useMainContract();
 
-  const { connected, accountAddress } = useTonConnect();
-  const isOwner = accountAddress === 'UQDtTs-hkx9THnUWYMKMmdCOudSS0t7LzhhOR7tzdZxPoI8h'; // TEMP FIX
+  const { connected } = useTonConnect();
 
   const [betAmount, setBetAmount] = useState("0.05");
-  const [gameState, setGameState] = useState("waiting for bet"); // Track the current game state
+  const [gameState, setGameState] = useState("waiting for bet");
+  const [modalMessage, setModalMessage] = useState<string | null>(null);
 
   const showAlert = () => {
     WebApp.showAlert("Hey there!");
   };
 
-  // Check if the bet amount is valid
   const isBetAmountValid = parseFloat(betAmount) >= 0.01 && parseFloat(betAmount) <= 10.0;
 
-  // Update gameState based on isWinner
   useEffect(() => {
+
     if (isWinner === true) {
       setGameState("you won");
+      setModalMessage("You won!");
     } else if (isWinner === false) {
       setGameState("you lost");
+      setModalMessage("You lost!");
     } else if (isWinner === undefined) {
-      // Keep "game in progress" if a bet has been placed, otherwise reset to "waiting for bet"
       setGameState(prevState => (prevState === "game in progress" ? prevState : "waiting for bet"));
     }
   }, [isWinner]);
+
+  const handleCloseModal = () => {
+    setModalMessage(null);
+  };
 
   return (
     <div className="app-container">
@@ -103,19 +109,17 @@ function App() {
                   onChange={(e) => {
                     const value = e.target.value;
 
-                    // Allow empty string or values that match the pattern for numbers and decimals
                     if (value === "" || /^\d*\.?\d*$/.test(value)) {
-                      // Allow any numeric value, even 0 or 0.x as intermediate states
                       if (value === "" || value === "0" || value === "0." || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0 && parseFloat(value) <= 10.0)) {
                         setBetAmount(value);
                       }
                     }
                   }}
                   onFocus={(e) => e.target.select()}
-                  min="0.001"
+                  min="0.01"
                   max="10.0"
                   step="any"
-                  className={`bet-input ${!isBetAmountValid ? "invalid" : ""}`} // Conditionally add "invalid" class
+                  className={`bet-input ${!isBetAmountValid ? "invalid" : ""}`}
               />
               {!isBetAmountValid &&
                   <p className="error-message">Please enter a valid amount between 0.01 and 10 TON.</p>}
@@ -127,29 +131,29 @@ function App() {
               <button
                   className="action-button"
                   onClick={() => sendDeposit(betAmount)}
-                  disabled={!isBetAmountValid} // Disable if bet amount is not valid
+                  disabled={!isBetAmountValid}
               >
                 (Admin) Deposit
               </button>
               <button
                   className="action-button"
                   onClick={() => sendWithdrawalRequest(betAmount)}
-              disabled={!isBetAmountValid} // Disable if bet amount is not valid
+              disabled={!isBetAmountValid}
             >
               (Admin) Withdraw
             </button>
           </div>
         )}
 
-        {connected && !isOwner && (
+        {connected && (
           <div className="actions">
             <button
               className="action-button"
               onClick={() => {
                 betOnHeads(betAmount);
-                setGameState("game in progress"); // Set game state to "game in progress" after bet
+                setGameState("game in progress");
               }}
-              disabled={!isBetAmountValid} // Disable if bet amount is not valid
+              disabled={!isBetAmountValid}
             >
               Bet on Heads
             </button>
@@ -157,13 +161,17 @@ function App() {
               className="action-button"
               onClick={() => {
                 betOnTails(betAmount);
-                setGameState("game in progress"); // Set game state to "game in progress" after bet
+                setGameState("game in progress");
               }}
-              disabled={!isBetAmountValid} // Disable if bet amount is not valid
+              disabled={!isBetAmountValid}
             >
               Bet on Tails
             </button>
           </div>
+        )}
+
+        {modalMessage && (
+          <Modal message={modalMessage} onClose={handleCloseModal} />
         )}
       </main>
     </div>
