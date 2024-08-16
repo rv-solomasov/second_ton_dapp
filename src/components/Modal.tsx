@@ -1,6 +1,6 @@
 // src/components/Modal.tsx
 import React from 'react';
-import './Modal.css'; // Create a CSS file for modal styling
+// Removed the import for Modal.css
 
 interface ModalProps {
   message: string;
