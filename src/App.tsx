@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { TonConnectButton } from '@tonconnect/ui-react';
 import './App.css';
+import DarkModeToggle from './DarkModeToggle';
 import { useMainContract } from './hooks/useMainContract';
 import { useTonConnect } from './hooks/useTonConnect';
 import { fromNano } from '@ton/core';
@@ -52,6 +53,7 @@ function App() {
     <div className="app-container">
       <header className="app-header">
         <TonConnectButton />
+        <DarkModeToggle />
         <button className="tutorial-button" onClick={showAlert}>
           Show Tutorial
         </button>
