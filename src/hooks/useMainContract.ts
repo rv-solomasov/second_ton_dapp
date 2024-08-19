@@ -33,11 +33,15 @@ export function useMainContract() {
     }, [client]);
 
     useEffect(() => {
+        let isSubscribed = true; // Flag to avoid setting state if the component is unmounted
+
         async function getValue() {
             if (!mainContract) return;
 
             const val = await mainContract.getData();
             const { balance } = await mainContract.getBalance();
+
+            if (!isSubscribed) return; // Avoid setting state if unmounted
 
             setContractData({
                 counter_value: val.number,
@@ -61,6 +65,7 @@ export function useMainContract() {
                 setIsOwner(false);
             }
 
+            // Logic for determining if the user is a winner
             if (prevGameCount !== null && val.number > prevGameCount) {
                 if (accountAddress) {
                     const addressObject = Address.parse(accountAddress);
@@ -83,6 +88,10 @@ export function useMainContract() {
         }
 
         getValue();
+
+        return () => {
+            isSubscribed = false; // Clean up on unmount
+        };
     }, [mainContract, sender, accountAddress, prevGameCount]); // Ensure to include accountAddress in the dependency array
 
     return {
