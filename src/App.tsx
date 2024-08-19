@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { TonConnectButton } from '@tonconnect/ui-react';
 import './App.css';
 import DarkModeToggle from './DarkModeToggle';
@@ -54,6 +54,19 @@ function App() {
         setModalMessage(null);
         setGameState("waiting for bet"); // Reset game state after closing the modal
     };
+
+    useEffect(() => {
+        // Handle transaction signing failure
+        const handleTransactionSigningFailed = () => {
+            setGameState('waiting for bet');
+        };
+
+        window.addEventListener('ton-connect-ui-transaction-signing-failed', handleTransactionSigningFailed);
+
+        return () => {
+            window.removeEventListener('ton-connect-ui-transaction-signing-failed', handleTransactionSigningFailed);
+        };
+    }, []);
 
     return (
         <div className="app-container">
