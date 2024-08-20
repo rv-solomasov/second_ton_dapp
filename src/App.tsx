@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { TonConnectButton } from '@tonconnect/ui-react';
 import './App.css';
 import DarkModeToggle from './DarkModeToggle';
