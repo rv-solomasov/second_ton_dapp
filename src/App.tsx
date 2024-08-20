@@ -3,7 +3,6 @@ import { TonConnectButton } from '@tonconnect/ui-react';
 import './App.css';
 import DarkModeToggle from './DarkModeToggle';
 import { useMainContract } from './hooks/useMainContract';
-import { useTonConnect } from './hooks/useTonConnect';
 import { fromNano } from '@ton/core';
 import WebApp from '@twa-dev/sdk';
 import Modal from './components/Modal';
@@ -15,13 +14,12 @@ function App() {
         contract_balance,
         isWinner,
         isOwner,
+        connected,
         betOnHeads,
         betOnTails,
         sendDeposit,
         sendWithdrawalRequest
     } = useMainContract();
-
-    const { connected } = useTonConnect();
 
     const [betAmount, setBetAmount] = useState("0.05");
     const [gameState, setGameState] = useState(connected ? "waiting for bet" : "please connect your wallet");

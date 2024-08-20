@@ -7,7 +7,7 @@ import { useTonConnect } from "./useTonConnect";
 
 export function useMainContract() {
     const client = useTonClient();
-    const { sender, accountAddress } = useTonConnect();
+    const { sender, accountAddress, connected } = useTonConnect();
 
     const sleep = (time: number) =>
         new Promise((resolve) => setTimeout(resolve, time));
@@ -99,6 +99,7 @@ export function useMainContract() {
         contract_address: mainContract?.address.toString(),
         contract_balance: balance,
         isWinner,
+        connected,
         isOwner, // Added isOwner to the returned object
         ...contractData,
         betOnHeads: async (amount: string) => {
