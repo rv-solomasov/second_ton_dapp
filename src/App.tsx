@@ -46,14 +46,7 @@ function App() {
         } else if (isWinner === undefined) {
             setGameState(prevState => (prevState === "game in progress" ? prevState : "waiting for bet"));
         }
-    }, [isWinner, connected], 300);
 
-    const handleCloseModal = () => {
-        setModalMessage(null);
-        setGameState("waiting for bet"); // Reset game state after closing the modal
-    };
-
-    useEffect(() => {
         // Handle transaction signing failure
         const handleTransactionSigningFailed = () => {
             setGameState('waiting for bet');
@@ -64,7 +57,12 @@ function App() {
         return () => {
             window.removeEventListener('ton-connect-ui-transaction-signing-failed', handleTransactionSigningFailed);
         };
-    }, []);
+    }, [isWinner, connected], 300);
+
+    const handleCloseModal = () => {
+        setModalMessage(null);
+        setGameState("waiting for bet"); // Reset game state after closing the modal
+    };
 
     return (
         <div className="app-container">
