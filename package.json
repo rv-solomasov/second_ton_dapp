@@ -13,6 +13,7 @@
     "@orbs-network/ton-access": "^2.3.3",
     "@tonconnect/ui-react": "^2.0.6",
     "@twa-dev/sdk": "^7.0.0",
+    "framer-motion": "^11.3.30",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "vite-plugin-node-polyfills": "^0.22.0",
