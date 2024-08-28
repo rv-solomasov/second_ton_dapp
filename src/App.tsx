@@ -6,7 +6,9 @@ import { useMainContract } from './hooks/useMainContract';
 import { fromNano } from '@ton/core';
 import WebApp from '@twa-dev/sdk';
 import Modal from './components/Modal';
-import { useDebouncedEffect } from './hooks/useDebouncedEffect'; // Import the debounced effect hook
+import { useDebouncedEffect } from './hooks/useDebouncedEffect';
+import Countdown from './components/Countdown'; // Import Countdown component
+import CoinFlip from './components/Coinflip'; // Import CoinFlip component
 
 function App() {
     const {
@@ -24,6 +26,10 @@ function App() {
     const [betAmount, setBetAmount] = useState("0.05");
     const [gameState, setGameState] = useState(connected ? "waiting for bet" : "please connect your wallet");
     const [modalMessage, setModalMessage] = useState<string | null>(null);
+    const [userBet, setUserBet] = useState<'heads' | 'tails' | null>(null); // Store user's bet choice
+    const [flipResult, setFlipResult] = useState<'heads' | 'tails' | null>(null); // State for coin result
+    const [isAnimating, setIsAnimating] = useState(false); // Control animation state
+    const [showCountdown, setShowCountdown] = useState(false); // State to show countdown
 
     const showAlert = () => {
         WebApp.showAlert("Hey there!");
@@ -31,23 +37,22 @@ function App() {
 
     const isBetAmountValid = parseFloat(betAmount) >= 0.01 && parseFloat(betAmount) <= 10.0;
 
+    // Effect to handle game state changes and animations based on bet and outcome
     useDebouncedEffect(() => {
         if (!connected) {
             setGameState("please connect your wallet");
             return;
         }
 
-        if (isWinner === true) {
-            setGameState("you won");
-            setModalMessage("You won!");
-        } else if (isWinner === false) {
-            setGameState("you lost");
-            setModalMessage("You lost!");
+        if (isWinner !== undefined && userBet) {
+            setFlipResult(isWinner ? userBet : userBet === 'heads' ? 'tails' : 'heads'); // Show correct side based on outcome
+            setIsAnimating(false); // Stop animation
+            setGameState(isWinner ? "you won" : "you lost");
+            setModalMessage(isWinner ? "You won!" : "You lost!");
         } else if (isWinner === undefined) {
-            setGameState(prevState => (prevState === "game in progress" ? prevState : "waiting for bet"));
+            setGameState("waiting for bet");
         }
 
-        // Handle transaction signing failure
         const handleTransactionSigningFailed = () => {
             setGameState('waiting for bet');
         };
@@ -57,11 +62,34 @@ function App() {
         return () => {
             window.removeEventListener('ton-connect-ui-transaction-signing-failed', handleTransactionSigningFailed);
         };
-    }, [isWinner, connected], 300);
+    }, [isWinner, connected, userBet], 300);
 
     const handleCloseModal = () => {
         setModalMessage(null);
-        setGameState("waiting for bet"); // Reset game state after closing the modal
+        setGameState("waiting for bet");
+        setUserBet(null); // Reset user's bet
+    };
+
+    const handleBet = (betType: 'heads' | 'tails') => {
+        if (betType === 'heads') {
+            betOnHeads(betAmount);
+        } else {
+            betOnTails(betAmount);
+        }
+        setUserBet(betType);
+        setGameState("game in progress");
+        setShowCountdown(true); // Show countdown when the bet is placed
+    };
+
+    // Callback when countdown completes
+    const handleCountdownComplete = () => {
+        setIsAnimating(true); // Start the coin flip animation
+        setShowCountdown(false); // Hide the countdown
+    };
+
+    // Callback when coin flip animation completes
+    const handleCoinFlipComplete = () => {
+        setIsAnimating(false); // Stop animation
     };
 
     return (
@@ -125,7 +153,6 @@ function App() {
                             value={betAmount}
                             onChange={(e) => {
                                 const value = e.target.value;
-
                                 if (value === "" || /^\d*\.?\d*$/.test(value)) {
                                     if (value === "" || value === "0" || value === "0." || (!isNaN(parseFloat(value)) && parseFloat(value) >= 0 && parseFloat(value) <= 10.0)) {
                                         setBetAmount(value);
@@ -167,25 +194,27 @@ function App() {
                     <div className="actions">
                         <button
                             className="action-button"
-                            onClick={() => {
-                                betOnHeads(betAmount);
-                                setGameState("game in progress");
-                            }}
+                            onClick={() => handleBet('heads')}
                             disabled={!isBetAmountValid || gameState === "game in progress"} // Disable button during game in progress
                         >
                             Bet on Heads
                         </button>
                         <button
                             className="action-button"
-                            onClick={() => {
-                                betOnTails(betAmount);
-                                setGameState("game in progress");
-                            }}
+                            onClick={() => handleBet('tails')}
                             disabled={!isBetAmountValid || gameState === "game in progress"} // Disable button during game in progress
                         >
                             Bet on Tails
                         </button>
                     </div>
+                )}
+
+                {gameState === "game in progress" && showCountdown && (
+                    <Countdown duration={5} onComplete={handleCountdownComplete} /> // Show countdown before coin flip
+                )}
+
+                {isAnimating && flipResult && (
+                    <CoinFlip result={flipResult} onAnimationComplete={handleCoinFlipComplete} /> // Show coin flip animation
                 )}
 
                 {modalMessage && (

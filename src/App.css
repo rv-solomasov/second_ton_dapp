@@ -325,3 +325,24 @@ body.dark-mode .info-item strong {
 body.dark-mode .modal-content {
   background-color: #1e1e1e; /* Dark background color for the modal */
 }
+
+/* App.css */
+.countdown {
+    font-size: 1.5rem;
+    color: #333;
+    text-align: center;
+    margin: 20px 0;
+}
+
+.coin {
+    margin: 20px auto;
+    width: 100px;
+    height: 100px;
+    background: gold;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    perspective: 1000px;
+}
